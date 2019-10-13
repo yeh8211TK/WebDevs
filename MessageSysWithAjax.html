@@ -1,0 +1,319 @@
+<!--標準模式HTML5-->
+<!DOCTYPE html>
+<html>
+	<head>
+		<!--編碼設定-->
+		<meta charset = 'UTF-8' />
+		<!--頁面大小設定-->
+		<meta name = 'viewport' content='width=device-width, initial-scale=1'>
+        <!--標題名稱-->
+        <title> 留言板 </title>
+
+        <style type="text/css">
+
+            *{
+                box-sizing: border-box;
+            } 
+
+            .mainpage{
+                width: 50%;
+                margin: 0 auto; 
+                position: absolute;
+                top: 50px;
+                left: 25%;
+            }
+
+            .comment{
+                padding: 0px 0px 20px;
+            }
+
+            .hiddenform{
+                display: none;
+            }
+
+            #textarea, #messagetext{
+                width: 100%;
+                height: 200px;
+                padding: 12px 20px;
+                margin: 8px 0;
+                border: 1px solid #ccc;
+                border-radius: 4px;
+            }
+
+            #textarea:focus, #messagetext:focus{
+                border: 2px solid black;
+            }
+
+            input[type=submit], .ajaxbtn{
+                border-radius: 5px;
+                background-color: DodgerBlue;
+                color: white;
+                width: 15%;
+                padding: 10px;
+                text-align: center;
+                font-size: 16px;
+            }
+
+            .showform, .sendblock{
+                border-bottom-left-radius: 5px;
+                border-bottom-right-radius: 5px;
+                background-color: Lightgray;
+                padding: 20px;
+                display: block;
+            }
+            
+            .reply, .DataArea, .SelectArea{
+                background-color: darkgray;
+                width: 100%;
+                padding: 10px 10px 10px 0px;  
+                position: relative;
+                top: 20px;
+            }
+
+            .SelectArea{
+                background-color: white;
+            }
+
+            .btn, .btn1, .btn2, .btn3{
+                background-color: gray;
+                color: white;
+                width: 10%;
+                padding: 10px 15px;
+                text-align: center;
+                font-size: 16px;
+                text-decoration: none;
+            }
+
+            .message_block{
+                background-color: white;
+                width: 100%;
+                padding: 10px 10px 10px 0px;  
+                position: relative;
+                top: 20px;
+            }
+
+            table, th, td{
+                border: 1px solid black;
+                border-collapse: collapse;
+            }
+
+            th, td{
+                padding: 15px;
+                text-align: center;
+            }
+
+            .message{
+                width: 100%;
+                margin: 0px auto;
+            }
+
+            #tbheader{
+                background-color: SlateBlue;
+                color: white;
+            }
+        </style>
+
+        <script type = "text/javascript">
+
+            var clickevent = function(){
+                document.querySelector(".btn1").addEventListener("click", (e)=>{
+                    var para1 = document.querySelector(".para1").innerText;
+                    var para2 = document.querySelector(".para2").innerText;
+                    var para3 = document.querySelector(".para3").innerText;
+                    var paras = "";
+
+                    if(para1 != ""){
+                        if(para2 != ""){
+                            if(para3 != ""){
+                                paras = "_limit=" + para1 + "&_sort=" + para2 + "&_order=" + para3;   
+                            } else {
+                                paras = "_limit=" + para1 + "&_sort=" + para2;
+                            }
+                        } else {
+                            paras = "_limit=" + para1;
+                        }
+                    };
+
+                    const url = "https://lidemy-book-store.herokuapp.com/posts?" + paras;
+
+                    // open 是發一個 request
+                    // 括號內部是發一個 GET 到指定網址
+                    // 第三個參數則是要不要非同步。非同步是 true。 
+                    request.open('GET', url, true);
+                    
+                    // 把資料送出去
+                    request.send();
+                    
+                    itema = document.querySelector(".btn1");
+                    itema.parentNode.removeChild(itema);
+
+                    const ahrefA = document.createElement('a');
+                    ahrefA.classList.add('btn2');
+                    ahrefA.href = `#`;
+                    ahrefA.innerHTML = ` 取消 `;
+
+                    const alldata = document.querySelector('.DataArea');
+                    alldata.appendChild(ahrefA);
+
+                    document.querySelector(".btn2").addEventListener("click", (e)=>{
+                        
+                        var messageNode = document.querySelector(".message_block");
+                        messageNode.innerHTML = ``;
+
+                        itemb = document.querySelector(".btn2");
+                        itemb.parentNode.removeChild(itemb);
+
+                        const ahrefB = document.createElement('a');
+                        ahrefB.classList.add('btn1');
+                        ahrefB.href = `#`;
+                        ahrefB.innerHTML = ` 獲取留言 `;
+
+                        const alldata = document.querySelector('.DataArea');
+                        alldata.appendChild(ahrefB);
+
+                        clickevent();
+                    });
+                });
+            };
+
+            document.addEventListener("DOMContentLoaded", function(){
+                document.querySelector(".btn").addEventListener("click", (e)=>{
+                    document.querySelector(".hiddenform").classList.toggle('showform');
+                });
+
+                clickevent();
+            });
+
+            var myFunction = function(val) {
+                document.querySelector(".ajaxbtn").addEventListener("click", (e)=>{
+                    const send_data = new XMLHttpRequest();
+                    
+                    send_data.open('POST', 'https://lidemy-book-store.herokuapp.com/posts', true);
+                
+                    send_data.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+                    
+                    let contentdata = "content=" + val;
+
+                    send_data.send(contentdata);
+
+                    send_data.onload = function () {
+                        if (send_data.status == 201) {
+                            alert("留言成功送出!");
+                        } else {
+                            alert("留言傳送失敗! 請重新留言。");
+                        };
+                    };
+                });
+            };         
+        </script>
+	</head>
+	
+	<body>
+		<div class='mainpage'>
+            <div class='comment'>
+                <div class="reply">
+                    <a href="#" class='btn'> 回覆 </a>
+                </div>
+
+                <div class="hiddenform">
+                        <textarea id="textarea" name="content" placeholder="請輸入文字..."></textarea>
+                        <input type="submit" value="送出"/>
+                </div>
+            </div>
+
+            <div class="DataArea">
+                <a href="#" class='btn1'> 獲取留言 </a>
+            </div>
+
+            <div class="SelectArea">
+                <!-- 排列清單 -->
+                <select name="limited_number" onchange="Number(this.value)">
+                    <option value="">回傳資料的數量</option>
+                    <option value="5">5</option>
+                    <option value="10">10</option>
+                    <option value="50">50</option>
+                    <option value="100">100</option>
+                </select>
+
+                <select name="sort" onchange="Sorted_col(this.value)">
+                    <option value="">排序的欄位</option>
+                    <option value="id">Id</option>
+                    <option value="content">Content</option>
+                </select>
+
+                <select name="order" onchange="Order_col(this.value)">
+                    <option value="">順序</option>
+                    <option value="asc">asc</option>
+                    <option value="desc">desc</option>
+                </select>
+                
+                <input type="hidden" class="para1"/>
+                <input type="hidden" class="para2"/>
+                <input type="hidden" class="para3"/>
+
+                <script type="text/javascript">
+                    var Number = function(val){
+                        const para1 = document.querySelector(".para1");
+                        para1.innerHTML = `${val}`;
+                    }
+                    var Sorted_col = function(val){
+                        const para2 = document.querySelector(".para2");
+                        para2.innerHTML = `${val}`;
+                    }
+                    var Order_col = function(val){
+                        const para3 = document.querySelector(".para3");
+                        para3.innerHTML = `${val}`;
+                    }
+                </script>
+            <!----------------------------------------------------------->
+            </div>
+
+            <div class="message_block"></div>
+
+            <div class="DataArea">
+                <a class='btn3'> 留言 </a>
+            </div>
+
+            <div class="sendblock">
+                <textarea id="messagetext" onchange="myFunction(this.value)"></textarea>
+                <button class='ajaxbtn'> 新增留言 </button>
+            </div>
+
+            <script type = "text/javascript">
+                const request = new XMLHttpRequest();
+
+                request.onload = function () {
+                    if (request.status >= 200 && request.status < 400) {
+                        // 這邊表示是有成功讀取網頁
+                        const response = request.responseText;
+                        const data = JSON.parse(response);
+
+                        const container = document.querySelector(".message_block");
+                        const tb = document.createElement('table');
+                        tb.classList.add('message');
+                        tb.innerHTML = ` <tr id="tbheader"><td> Id </td><td> Content </td></tr> `;
+                        container.appendChild(tb);
+
+                        const tbdata = document.querySelector('.message');
+                        for(let j = 0; j < data.length; j++) {
+                            
+                            const tr = document.createElement('tr');
+                            tr.innerHTML = ` <tr><td> ${data[j].id} </td><td> ${data[j].content} </td></tr> `;
+                            
+                            tbdata.appendChild(tr);
+                        };
+
+                    } else {
+                        console.log('Response error!', request.status, request.responseText);
+                    }
+                };
+                
+                request.onerror = function () {
+                    console.log('Request error!')
+                };
+            </script>
+
+            <div class="SelectArea"></div>
+        </div>
+	</body>
+</html>
