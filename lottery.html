@@ -1,0 +1,162 @@
+<!--標準模式HTML5-->
+<!DOCTYPE html>
+<html>
+	<head>
+		<!--編碼設定-->
+		<meta charset = 'UTF-8' />
+		<!--頁面大小設定-->
+		<meta name = 'viewport' content='width=device-width, initial-scale=1'>
+        <!--標題名稱-->
+        <title> 抽獎頁面 </title>
+
+        <style type="text/css">
+            *{
+                box-sizing: border-box;
+            } 
+
+            .mainpage{
+                width: 50%;
+                margin: 0 auto; 
+                position: absolute;
+                top: 50px;
+                left: 25%;
+            }
+
+            .titlename, .lottery_btn, .message{
+            	display: flex;
+            	justify-content: center;
+            }
+
+            .btn1, .btn2{
+                background-color: tomato;
+                color: white;
+                width: 20%;
+                padding: 15px 15px;
+                text-align: center;
+                font-size: 18px;
+                text-decoration: none;
+                border-radius: 5px;
+            }
+
+            .message{
+                position: relative;
+                top: 100px;
+            }
+
+            .message_data1, .message_data2, .message_data3, .message_data4{
+                font-size: 50px;
+                font-family: Monospace;
+                padding: 10px;
+                border: 2px black solid;
+            }
+
+        </style>
+
+        <script type = "text/javascript">
+        	var clickevent = function(){
+                document.querySelector(".btn1").addEventListener("click", (e)=>{
+                    request.open('GET', 'https://dvwhnbka7d.execute-api.us-east-1.amazonaws.com/default/lottery', true);
+               
+                    request.send();
+
+                    itema = document.querySelector(".btn1");
+                    itema.parentNode.removeChild(itema);
+
+                    const ahrefA = document.createElement('a');
+	                ahrefA.classList.add('btn2');
+	                ahrefA.href = `#`;
+	                ahrefA.innerHTML = ` 重新執行 `;
+
+	                const lottery = document.querySelector('.lottery_btn');
+	                lottery.appendChild(ahrefA);
+
+	                document.querySelector(".btn2").addEventListener("click", (e)=>{
+                        
+                        item = document.querySelector(".message");
+                        item.parentNode.removeChild(item);
+
+                        itemb = document.querySelector(".btn2");
+                        itemb.parentNode.removeChild(itemb);
+
+	                    const ahrefB = document.createElement('a');
+		                ahrefB.classList.add('btn1');
+		                ahrefB.href = `#`;
+		                ahrefB.innerHTML = ` 請按這裡 `;
+
+		                const lottery = document.querySelector('.lottery_btn');
+		                lottery.appendChild(ahrefB);
+
+		                clickevent();
+		            });
+                });
+            };
+
+	        document.addEventListener("DOMContentLoaded", function(){
+	            clickevent();
+            });
+        </script>
+	</head>
+	
+	<body>
+		<div class='mainpage'>
+            <div class='titlename'>
+			    <h1> 抽獎 </h1>
+            </div>
+
+            <div class="lottery_btn">
+                <a href="#" class='btn1'> 請按這裡 </a>
+            </div>
+
+            <script type = "text/javascript">
+                const request = new XMLHttpRequest();
+                const container = document.querySelector('.mainpage');
+                request.onload = function () {
+                    if (request.status >= 200 && request.status < 400) {
+                        
+                        const response = request.responseText;
+                        const data = JSON.parse(response);                    
+	                    
+	                    const div = document.createElement('div');
+	                    div.classList.add('message');
+	                    
+	                    if(data.prize === 'FIRST'){
+	                    	
+	                    	div.innerHTML = `<div class="message_data1"> 恭喜你中頭獎了! </div>`;
+	                        container.appendChild(div);
+
+	                    } else if (data.prize === 'SECOND'){
+                            
+                            div.innerHTML = `<div class="message_data2"> 恭喜你抽中二獎！ </div>`;
+	                        container.appendChild(div);
+
+	                    } else if (data.prize === 'THIRD'){
+                            
+                            div.innerHTML = `<div class="message_data3"> 恭喜你抽中三獎! </div>`;
+	                        container.appendChild(div);
+
+                        } else if (data.prize === 'NONE'){
+                            
+                            div.innerHTML = `<div class="message_data4"> ~ 銘謝惠顧 ~ </div>`;
+	                        container.appendChild(div);
+
+	                    } else {
+
+                            container.appendChild(div);
+                            alert('系統不穩定，請再試一次');
+
+	                    };
+	                    
+                    } else {
+
+                        console.log('Response error!', request.status, request.responseText);
+
+                    }
+                };
+                
+                request.onerror = function () {
+                    console.log('Request error!')
+                };
+            </script>      
+        </div>
+	</body>
+</html>
